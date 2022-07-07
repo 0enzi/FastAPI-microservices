@@ -1,3 +1,4 @@
+from math import prod
 from fastapi import FastAPI
 from redis_om import get_redis_connection, HashModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,8 +28,28 @@ class Product(HashModel):
 def all():
     return Product.all_pks()
 
+def format(pk: str):
+    product = Product.get(pk)
+
+    return {
+        'id': product.pk,
+        'name': product.name,
+        'price': product.price,
+        'quantity': product.quantity
+
+    }
+
 @app.post('/products')
 def create(product: Product):
-    return product.save()
+    return Product.save()
+
+@app.get('/products/{pk}')
+def get(pk: str):
+    return Product.get(pk)
+
+
+@app.delete('/product/{pk}')
+def delete(pk: str):
+    return Product.delete(pk)
 
 
